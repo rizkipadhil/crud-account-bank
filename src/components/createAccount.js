@@ -86,7 +86,7 @@ class CreateAccount extends Component {
     checkForm(event, field){
         this.onChangeState(event.target.value, field);
     }
-    createAction(){
+    createAction(cc){
         const getItem = this.state.accountList;
         const lastId = getItem.length > 0 ? getItem[getItem.length - 1].id : 0;
         const insertdata = {
@@ -97,6 +97,7 @@ class CreateAccount extends Component {
             address: this.state.address,
             city: this.state.city,
             country: this.state.country,
+            currency: cc,
             type: this.state.type
         };
         if (this.state.type === 'company') {
@@ -112,7 +113,7 @@ class CreateAccount extends Component {
         const frozenObj = Object.freeze(newObject);
         return Object.freeze(arrayA.concat(frozenObj));
     }
-    submitFormHeh(event){
+    async submitFormHeh(event){
         const self = this;
         this.checkingState('accountHolderName', 'Account Holder Name Required');
         this.checkingState('accountNumber', 'Account Number Required');
@@ -127,9 +128,10 @@ class CreateAccount extends Component {
             this.checkingState('firstName', 'First Name Required');
             this.checkingState('lastName', 'Last Name Required');
         }
+        const getCC = await this.checkCountryCurrencyCode(this.state.country);
         setTimeout(function () {
             if (!self.state.stopAction) {
-                self.createAction();
+                self.createAction(getCC);
                 if (self.state.type === 'company') {
                     self.props.history.push("/tableCompany");
                 } else {

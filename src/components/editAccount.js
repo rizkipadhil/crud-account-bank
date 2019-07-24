@@ -108,7 +108,7 @@ class EditAccount extends Component {
     checkForm(event, field){
         this.onChangeState(event.target.value, field);
     }
-    editAction(){
+    editAction(cc){
         const id = this.state.id;
         const getItem = this.state.accountList;
         const {
@@ -132,6 +132,7 @@ class EditAccount extends Component {
                 xdata.city = city;
                 xdata.country = country;
                 xdata.type = type;
+                xdata.currency = cc;
                 if(type !== 'individual'){
                     xdata.companyName = companyName;
                 }else{
@@ -147,7 +148,7 @@ class EditAccount extends Component {
         const frozenObj = Object.freeze(newObject);
         return Object.freeze(arrayA.concat(frozenObj));
     }
-    submitFormHeh(event){
+    async submitFormHeh(event){
         const self = this;
         this.checkingState('accountHolderName', 'Account Holder Name Required');
         this.checkingState('accountNumber', 'Account Number Required');
@@ -162,9 +163,10 @@ class EditAccount extends Component {
             this.checkingState('firstName', 'First Name Required');
             this.checkingState('lastName', 'Last Name Required');
         }
+        const getCC = await this.checkCountryCurrencyCode(this.state.country);
         setTimeout(function () {
             if (!self.state.stopAction) {
-                self.editAction();
+                self.editAction(getCC);
                 if (self.state.type === 'company') {
                     self.props.history.push("/tableCompany");
                 } else {
